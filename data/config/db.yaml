@@ -1,0 +1,13 @@
+%YAML 1.2
+---
+# Student "Database" configuration
+expected extensions:
+  - csv
+header row: 4
+columns:
+  name: 7
+  name pattern:
+  ID: 5
+  username: 8
+  period: 4 # optional
+  grade level: 6 # optional
