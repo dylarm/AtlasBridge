@@ -1,0 +1,11 @@
+attrs==21.2.0
+iniconfig==1.1.1
+jellyfish==0.8.2
+packaging==20.9
+pip==21.1.2
+pluggy==0.13.1
+py==1.10.0
+pyparsing==2.4.7
+pytest==6.2.4
+setuptools==57.0.0
+toml==0.10.2
