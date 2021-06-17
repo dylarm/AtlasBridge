@@ -1,13 +1,13 @@
 from ruamel.yaml import YAML
 from pathlib import Path
-from . import AttrDict
+from typing import Dict, Any
 
 
-def import_config(path: Path) -> AttrDict:
-    yaml = YAML(typ='safe')
-    config = AttrDict(yaml.load(path))
+def import_config(path: Path) -> Dict[str, Any]:
+    yaml = YAML(typ="safe")
+    config = yaml.load(path)
     return config
 
 
-def write_config(conf: AttrDict) -> None:
+def write_config(conf: Dict[str, Any]) -> None:
     pass
