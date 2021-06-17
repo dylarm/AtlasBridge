@@ -9,5 +9,6 @@ def import_config(path: Path) -> Dict[str, Any]:
     return config
 
 
-def write_config(conf: Dict[str, Any]) -> None:
-    pass
+def write_config(conf: Dict[str, Any], path: Path) -> None:
+    yaml = YAML()
+    yaml.dump(conf, path)
