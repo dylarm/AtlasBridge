@@ -1,0 +1,21 @@
+%YAML 1.2
+---
+# Illuminate grade export
+expected_extensions:
+  - xls
+contains_multiple: False
+needs_matching: False # Do we need to match against something?
+match_with:
+rows:
+  header: 1
+columns:
+  name:
+    - 3 # First Name
+    - 2 # Last Name
+  name_pattern:
+  ID: 1
+  username:
+  points:
+    single:
+      assignment: 6 # For "Student responses" file - not sure how to do the "data" file...
+      total: 7 # For "Student responses" file
