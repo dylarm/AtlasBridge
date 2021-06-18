@@ -28,3 +28,7 @@ def test_config_import_export(c):
     tmp_file.close()
     os.remove(file)
     assert in_dict == c
+
+
+def test_config_validity():
+    assert True
