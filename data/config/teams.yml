@@ -1,0 +1,24 @@
+%YAML 1.2
+---
+# Teams grade export
+expected_extensions:
+  - csv
+contains_multiple: True
+needs_matching: True # Do we need to match against something?
+match_with: username
+rows:
+  header: 1
+columns:
+  name:
+    - 1 # First Name
+    - 2 # Last Name
+  name_pattern:
+  ID:
+  username: 3
+  points:
+    single:
+      assignment: 4
+      total: 5
+    multi:
+      assignment: 3 # because the next assignment would be in column 7, then 10, then...
+      total: 3 # I hope these are never different...
