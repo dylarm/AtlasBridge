@@ -17,3 +17,6 @@ _package_data = dict(
 
 version_info = _package_data["version_info"]
 __version__ = _package_data["__version__"]
+__author__ = _package_data["author"]
+__email__ = _package_data["author_email"]
+
