@@ -1,3 +1,4 @@
+import logging
 from typing import Dict, Any
 
 _package_data = dict(
@@ -20,3 +21,10 @@ __version__ = _package_data["__version__"]
 __author__ = _package_data["author"]
 __email__ = _package_data["author_email"]
 
+
+def main() -> None:
+    pass
+
+
+if __name__ == "__main__":
+    main()
