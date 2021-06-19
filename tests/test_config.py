@@ -32,6 +32,13 @@ def test_config_import_export(c):
     assert in_dict == c
 
 
+@given(bad_file=st.characters(whitelist_categories=CHAR_CAT))
+def test_config_import_bad_files(bad_file):
+    with pytest.raises(FileNotFoundError):
+        assert config.import_config(path=Path(bad_file))
+
+
+@given(dne=st.text(alphabet=st.characters(whitelist_categories=CHAR_CAT)))
 def test_config_file_validity(dne):
     config_dir = Path("data/config")
     config_files = config_dir.glob("*.yml")
