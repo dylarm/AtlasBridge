@@ -1,5 +1,6 @@
 import logging
 from typing import Dict, Any
+from pathlib import Path
 
 _package_data = dict(
     full_package_name="atlasbridge",
@@ -22,9 +23,26 @@ __author__ = _package_data["author"]
 __email__ = _package_data["author_email"]
 
 
+def setup_logging(
+    output_file: Path = None,
+    to_file: bool = False,
+    default_level=logging.DEBUG,
+    str_format: str = "%(asctime)s: [%(name)s/%(levelname)s] %(message)s",
+) -> None:
+    """Set up logging configuration"""
+    if to_file and output_file:
+        logging.basicConfig(
+            filename=str(output_file), level=default_level, format=str_format
+        )
+    else:
+        logging.basicConfig(level=default_level, format=str_format)
+
+
 def main() -> None:
     pass
 
 
+setup_logging()
+logger = logging.getLogger(__name__)
 if __name__ == "__main__":
     main()
