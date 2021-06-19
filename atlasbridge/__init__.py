@@ -39,6 +39,7 @@ def setup_logging(
 
 
 def main() -> None:
+    logger.debug("Starting main()")
     pass
 
 
