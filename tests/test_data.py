@@ -10,6 +10,7 @@ myPath = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, myPath + "/../")
 
 from atlasbridge.files import data
+from atlasbridge.constants import EXP_EXT
 
 
 @given(
@@ -17,12 +18,12 @@ from atlasbridge.files import data
     config=st.lists(st.characters(whitelist_categories=CHAR_CAT)),
 )
 def test_extension_check(ext: str, config: List[str]):
-    t_dict = {"expected_extensions": config}
+    t_dict = {EXP_EXT: ["." + f for f in config]}
     t_file = Path("test_file." + ext)
-    if ext not in config:
+    if ext in config:
         ext_in_dict = data.__check_extension(path=t_file, conf=t_dict)
-        note(f"Extension NOT in dict result: {ext_in_dict}")
-        assert ext_in_dict is False
+        note(f"Extension IS in dict result: {ext_in_dict}")
+        assert ext_in_dict
     else:
         ext_in_dict = data.__check_extension(path=t_file, conf=t_dict)
         note(f"Extension IS in dict result: {ext_in_dict}")
