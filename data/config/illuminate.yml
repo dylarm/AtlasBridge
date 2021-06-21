@@ -2,7 +2,7 @@
 ---
 # Illuminate grade export
 expected_extensions:
-  - xls
+  - .xls
 contains_multiple: False
 needs_matching: False # Do we need to match against something?
 match_with:

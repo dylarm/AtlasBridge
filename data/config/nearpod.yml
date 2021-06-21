@@ -2,9 +2,9 @@
 ---
 # Illuminate grade export
 expected_extensions:
-  - zip
-  - zip/csv
-  - csv
+  - .zip
+  - .zip/csv
+  - .csv
 contains_multiple: False
 needs_matching: True # Do we need to match against something?
 match_with: name_pattern

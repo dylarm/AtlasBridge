@@ -2,7 +2,7 @@
 ---
 # Teams grade export
 expected_extensions:
-  - csv
+  - .csv
 contains_multiple: True
 needs_matching: True # Do we need to match against something?
 match_with: username

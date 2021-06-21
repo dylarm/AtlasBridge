@@ -2,7 +2,7 @@
 ---
 # Student "Database" configuration
 expected_extensions:
-  - csv
+  - .csv
 rows:
   header: 4
 columns:
