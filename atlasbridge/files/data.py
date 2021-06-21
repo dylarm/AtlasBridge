@@ -3,12 +3,18 @@ import pandas as pd
 from pathlib import Path
 from typing import Dict, Any
 
+from atlasbridge.constants import READING_EXTENSIONS, EXP_EXT
+
 logger = logging.getLogger(__name__)
 
 
 def __check_extension(path: Path, conf: Dict[str, Any]) -> bool:
     logger.debug(f"Testing extension for {path.name}")
-    return path.suffix in conf["expected_extensions"]
+    return path.suffix in conf[EXP_EXT]
+
+
+def __validate_extension(path: Path) -> bool:
+    return path.suffix in READING_EXTENSIONS
 
 
 def __read_excel(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
