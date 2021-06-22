@@ -3,7 +3,8 @@ import pandas as pd
 from pathlib import Path
 from typing import Dict, Any
 
-from atlasbridge.constants import READING_EXTENSIONS, EXP_EXT
+from atlasbridge.constants import READING_EXTENSIONS
+from atlasbridge.constants import EXP_EXT, HEADER, ROW, COLUMN
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +19,19 @@ def __validate_extension(path: Path) -> bool:
 
 
 def __read_excel(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
-    pass
+    """Read an Excel file, return a pandas DataFrame"""
+    # Columns are 0-indexed, but the YAML files are 1-indexed
+    columns = [c - 1 for c in conf[COLUMN].values() if c is not None]
+    try:
+        excel_file = pd.read_excel(
+            io=path,
+            header=conf[ROW][HEADER],
+            usecols=columns,
+        )
+    except ValueError as e:
+        excel_file = pd.DataFrame()
+        logger.error(f"Error loading {path.name}: {e}")
+    return excel_file
 
 
 def __read_csv(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
