@@ -52,13 +52,11 @@ def __read_file(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
             f"Extension {extension} was NOT expected for {path.name}"
             f"Expected one of: {conf['expected_extensions']}"
         )
-    if extension is READING_EXTENSIONS[0]:  # csv
+    if extension in READING_EXTENSIONS[0]:  # csv
         db = __read_csv(path, conf)
-    elif (
-        extension is READING_EXTENSIONS[1] or extension is READING_EXTENSIONS[2]
-    ):  # Excel
+    elif extension in READING_EXTENSIONS[1:3]:  # Excel, slice for position 1 and 2
         db = __read_excel(path, conf)
-    elif extension is READING_EXTENSIONS[3]:  # zip
+    elif extension in READING_EXTENSIONS[3]:  # zip
         db = __read_zip(path, conf)
     else:
         logger.error(f"No reader found for {extension} !")
