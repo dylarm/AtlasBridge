@@ -11,13 +11,11 @@ match_with: name_pattern
 rows:
   header: 1
 columns:
-  name:
-    - 3 # First Name
-    - 2 # Last Name
+  name: 1
   name_pattern:
-  ID: 1
+  ID:
   username:
   points:
     single:
-      assignment: 6 # For "Student responses" file - not sure how to do the "data" file...
-      total: 7 # For "Student responses" file
+      assignment: 5
+      total:
