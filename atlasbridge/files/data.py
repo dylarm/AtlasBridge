@@ -1,7 +1,8 @@
 import logging
 import pandas as pd
 from pathlib import Path
-from typing import Dict, List, Any, Hashable
+from zipfile import ZipFile
+from typing import Dict, List, Any, Hashable, Union, IO
 
 from atlasbridge.constants import READING_EXTENSIONS
 from atlasbridge.constants import EXP_EXT, HEADER, ROW, COLUMN
@@ -41,7 +42,7 @@ def __correct_df_dtypes(df: pd.DataFrame) -> pd.DataFrame:
     return df.astype(new_dtypes)
 
 
-def __read_excel(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
+def __read_excel(path: Union[Path, IO], conf: Dict[str, Any]) -> pd.DataFrame:
     """Read an Excel file, return a pandas DataFrame"""
     logger.info("Reading Excel file")
     # Columns are 0-indexed, but the YAML files are 1-indexed
@@ -60,7 +61,7 @@ def __read_excel(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
     return __correct_df_dtypes(excel_file)
 
 
-def __read_csv(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
+def __read_csv(path: Union[Path, IO], conf: Dict[str, Any]) -> pd.DataFrame:
     """Read a CSV, return a pandas DataFrame"""
     logger.info("Reading CSV file")
     columns = __zero_index(conf[COLUMN].values())
@@ -79,8 +80,50 @@ def __read_csv(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
     return __correct_df_dtypes(csv_file)
 
 
-def __read_zip(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
-    pass
+def __read_zip(path: Union[Path, IO], conf: Dict[str, Any]) -> pd.DataFrame:
+    """Open a zip file to find a csv/xls(x), then read that and return a pandas DataFrame"""
+    logger.debug("Loading zip file")
+    with ZipFile(path) as zfile:
+        zlist = zfile.namelist()
+        znames = enumerate(zlist)  # We'll need this for the list comps
+        logger.debug(f"Files in archive: {zlist}")
+        potential_files = []
+        for extension in READING_EXTENSIONS:
+            potential_files += [i for i, n in znames if extension in n]
+            # This may allow for recursion, i.e. a zip within a zip. We can go all the way down to figure out where
+            # a valid csv/excel file may be. Also a possible vector of attack, I suppose, if someone wanted to be mean
+            # and put in a zip-bomb instead...
+        logger.debug(f"Potential file indices: {potential_files}")
+        if not potential_files:
+            logger.error("No valid files found in zip file")
+            zip_file = pd.DataFrame()
+            return zip_file
+        elif len(potential_files) > 1:
+            logger.warning(
+                f"More than 1 valid file found: {len(potential_files)}"
+                f"Defaulting to the first one: {zlist[potential_files[0]]}"
+            )
+        file_to_use = zlist[potential_files[0]]
+        logger.info(f"Extracting '{file_to_use}'")
+        with zfile.open(file_to_use) as file:
+            zip_file = __load_file(file=file, conf=conf, ext=Path(file_to_use).suffix)
+        return zip_file  # No need to run __correct_df_dtypes() since it's been run by now if needed
+
+
+def __load_file(file: Union[Path, IO], conf: Dict[str, Any], ext: str = "") -> pd.DataFrame:
+    logger.debug("Start loading file")
+    if isinstance(file, Path) and not ext:
+        ext = file.suffix
+    if ext in READING_EXTENSIONS[0]:  # csv
+        db = __read_csv(file, conf)
+    elif ext in READING_EXTENSIONS[1:3]:  # Excel, slice for position 1 and 2
+        db = __read_excel(file, conf)
+    elif ext in READING_EXTENSIONS[3]:  # zip
+        db = __read_zip(file, conf)
+    else:
+        logger.error(f"No reader found for {ext} !")
+        db = pd.DataFrame()
+    return db
 
 
 def __read_file(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
@@ -93,15 +136,7 @@ def __read_file(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
             f"Extension {extension} was NOT expected for {path.name}"
             f"Expected one of: {conf[EXP_EXT]}"
         )
-    if extension in READING_EXTENSIONS[0]:  # csv
-        db = __read_csv(path, conf)
-    elif extension in READING_EXTENSIONS[1:3]:  # Excel, slice for position 1 and 2
-        db = __read_excel(path, conf)
-    elif extension in READING_EXTENSIONS[3]:  # zip
-        db = __read_zip(path, conf)
-    else:
-        logger.error(f"No reader found for {extension} !")
-        db = pd.DataFrame()
+    db = __load_file(file=path, conf=conf, ext=extension)
     return db
 
 
