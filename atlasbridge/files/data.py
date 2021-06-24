@@ -61,7 +61,22 @@ def __read_excel(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
 
 
 def __read_csv(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
-    pass
+    """Read a CSV, return a pandas DataFrame"""
+    logger.info("Reading CSV file")
+    columns = __zero_index(conf[COLUMN].values())
+    try:
+        logger.debug(f"Attempting to load {path.name} with columns {columns}")
+        csv_file = pd.read_csv(
+            filepath_or_buffer=path,
+            sep=",",  # Better to be explicit than implicit
+            header=conf[ROW][HEADER] - 1,
+            usecols=columns,
+        )
+        csv_file.index = pd.RangeIndex(start=0, stop=len(csv_file.index))
+    except ValueError as e:
+        csv_file = pd.DataFrame()
+        logger.error(f"Error loading {path.name}: {e}")
+    return __correct_df_dtypes(csv_file)
 
 
 def __read_zip(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:

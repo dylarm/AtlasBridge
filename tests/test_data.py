@@ -1,7 +1,6 @@
 import sys, os
 
 import pandas as pd
-import pytest
 from hypothesis import given, note, example, strategies as st
 from hypothesis.extra import pandas as stpd
 from pathlib import Path
@@ -83,8 +82,31 @@ def test_read_excel(df: pd.DataFrame, ind):
     pd.testing.assert_frame_equal(df, in_file)
 
 
-def test_read_csv():
-    assert True
+@given(
+    df=stpd.data_frames(
+        [
+            # stpd.column("Name", dtype=str),  # TODO: This thing again
+            stpd.column("Points Earned", dtype="int64"),
+            stpd.column("Points Possible", dtype="int64"),
+            stpd.column("Percentage", dtype="int64"),
+        ]
+    )
+)
+def test_read_csv(df):
+    test_file = "tests/test_file.csv"
+    t_conf = {
+        "rows": {"header": 1},
+        "columns": {
+            # "Name": 1,  # TODO: Why exclude this when it worked fine for the excel file?
+            "Points Earned": 1,
+            "Points Possible": 2,
+            "Percentage": 3,
+        },
+    }
+    df.to_csv(path_or_buf=test_file, index=False)
+    in_file = data.__read_csv(Path(test_file), t_conf)
+    os.remove(test_file)
+    pd.testing.assert_frame_equal(df, in_file)
 
 
 def test_read_zip():
