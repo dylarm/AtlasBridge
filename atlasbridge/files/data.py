@@ -20,12 +20,14 @@ def __validate_extension(path: Path) -> bool:
 
 def __read_excel(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
     """Read an Excel file, return a pandas DataFrame"""
+    logger.info("Reading Excel file")
     # Columns are 0-indexed, but the YAML files are 1-indexed
-    columns = [c - 1 for c in conf[COLUMN].values() if c is not None]
+    columns = __zero_index(conf[COLUMN].values())
     try:
+        logger.debug(f"Attempting to load {path.name} with columns {columns}")
         excel_file = pd.read_excel(
             io=path,
-            header=conf[ROW][HEADER],
+            header=conf[ROW][HEADER] - 1,
             usecols=columns,
         )
     except ValueError as e:
