@@ -1,7 +1,9 @@
 import sys, os
 
+import pandas as pd
 import pytest
 from hypothesis import given, note, example, strategies as st
+from hypothesis.extra import pandas as stpd
 from pathlib import Path
 from typing import List
 from test_config import CHAR_CAT
@@ -39,8 +41,46 @@ def test_invalidate_ext(ext: str):
     assert not res
 
 
-def test_read_excel():
-    assert True
+@given(i=st.lists(st.integers()))
+def test_zero_indexing(i):
+    oned = [n + 1 for n in i]
+    note(f"{oned} -> {i}")
+    assert data.__zero_index(oned) == i
+
+
+@given(
+    df=stpd.data_frames(
+        [
+            # stpd.column("Name", dtype=str), # TODO: Fix failure on empty strings → converts to NaN
+            stpd.column("Points Earned", dtype="int64"),
+            stpd.column("Points Possible", dtype="int64"),
+            stpd.column("Percentage", dtype="int64"),
+        ]
+    ),
+    ind=st.lists(st.integers(min_value=1)),
+)
+def test_read_excel(df: pd.DataFrame, ind):
+    file = "tests/test_file.xls"
+    with pd.ExcelWriter(file, engine="xlwt") as writer:
+        df.to_excel(excel_writer=writer, index=False)
+    t_conf = {
+        "rows": {"header": 1},
+        "columns": {
+            "Name": 1,
+            "Points Earned": 2,
+            "Points Possible": 3,
+            "Percentage": 4,
+        },
+    }
+    in_file = data.__read_excel(Path(file), t_conf)
+    os.remove(file)
+    note(f"Original (left): {df}")
+    note(f"Original dtypes: {df.dtypes}")
+    note(f"Original items: {[str(x) for x in df.items()]}")
+    note(f"Read df (right): {in_file}")
+    note(f"Read dtypes: {in_file.dtypes}")
+    note(f"Read items: {[str(x) for x in in_file.items()]}")
+    pd.testing.assert_frame_equal(df, in_file)
 
 
 def test_read_csv():

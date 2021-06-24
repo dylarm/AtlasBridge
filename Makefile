@@ -1,5 +1,5 @@
 TEST_MOD = pytest
-TEST_OPT = --hypothesis-show-statistics
+TEST_OPT = -s
 
 init:
 	pip install -r requirements.txt

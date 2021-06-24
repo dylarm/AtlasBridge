@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, List, Any, Hashable
 
 from atlasbridge.constants import READING_EXTENSIONS
 from atlasbridge.constants import EXP_EXT, HEADER, ROW, COLUMN
@@ -18,6 +18,29 @@ def __validate_extension(path: Path) -> bool:
     return path.suffix in READING_EXTENSIONS
 
 
+def __zero_index(indices: List[int]) -> List[int]:
+    """Subtract 1 from every value"""
+    return [i - 1 for i in indices if i is not None]
+
+
+def __correct_df_dtypes(df: pd.DataFrame) -> pd.DataFrame:
+    """Attempt to correct the dtype of a pandas dataframe based on heuristics"""
+    logger.info(f"Checking dtypes for dataframe")
+    new_dtypes: Dict[Hashable, str] = {}
+    for column, data in df.items():
+        logger.debug(f"Checking column {column}: {data.dtype}")
+        col_name = str(column).lower()
+        if (
+            "points" in col_name or "percent" in col_name
+        ) and not pd.api.types.is_numeric_dtype(data):
+            logger.debug(f"{column} is not numeric, adding to fix dict")
+            new_dtypes[column] = "int64"
+        elif "name" in col_name and not pd.api.types.is_string_dtype(data):
+            logger.debug(f"{column} is not string-like, adding to fix dict")
+            new_dtypes[column] = "object"
+    return df.astype(new_dtypes)
+
+
 def __read_excel(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
     """Read an Excel file, return a pandas DataFrame"""
     logger.info("Reading Excel file")
@@ -30,10 +53,11 @@ def __read_excel(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
             header=conf[ROW][HEADER] - 1,
             usecols=columns,
         )
+        excel_file.index = pd.RangeIndex(start=0, stop=len(excel_file.index))
     except ValueError as e:
         excel_file = pd.DataFrame()
         logger.error(f"Error loading {path.name}: {e}")
-    return excel_file
+    return __correct_df_dtypes(excel_file)
 
 
 def __read_csv(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
