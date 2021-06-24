@@ -91,7 +91,7 @@ def __read_file(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
     else:
         logger.warning(
             f"Extension {extension} was NOT expected for {path.name}"
-            f"Expected one of: {conf['expected_extensions']}"
+            f"Expected one of: {conf[EXP_EXT]}"
         )
     if extension in READING_EXTENSIONS[0]:  # csv
         db = __read_csv(path, conf)
