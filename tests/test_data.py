@@ -47,7 +47,6 @@ def test_zero_indexing(i):
     assert data.__zero_index(oned) == i
 
 
-# TODO: Fix dataframe to accurately reflect the structure of the config files
 @given(
     df=stpd.data_frames(
         [

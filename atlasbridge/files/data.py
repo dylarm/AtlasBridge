@@ -21,7 +21,7 @@ def __validate_extension(path: Path) -> bool:
 
 def __zero_index(indices: List[int]) -> List[int]:
     """Subtract 1 from every value"""
-    return [i - 1 for i in indices if i is not None]
+    return [i - 1 for i in indices if isinstance(i, int)]  # Non-integers need not apply
 
 
 def __correct_df_dtypes(df: pd.DataFrame) -> pd.DataFrame:
@@ -110,7 +110,9 @@ def __read_zip(path: Union[Path, IO], conf: Dict[str, Any]) -> pd.DataFrame:
         return zip_file  # No need to run __correct_df_dtypes() since it's been run by now if needed
 
 
-def __load_file(file: Union[Path, IO], conf: Dict[str, Any], ext: str = "") -> pd.DataFrame:
+def __load_file(
+    file: Union[Path, IO], conf: Dict[str, Any], ext: str = ""
+) -> pd.DataFrame:
     logger.debug("Start loading file")
     if isinstance(file, Path) and not ext:
         ext = file.suffix
