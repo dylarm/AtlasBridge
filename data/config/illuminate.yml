@@ -15,7 +15,5 @@ columns:
   name_pattern:
   ID: 1
   username:
-  points:
-    single:
-      assignment: 6 # For "Student responses" file - not sure how to do the "data" file...
-      total: 7 # For "Student responses" file
+  points_single_assignment: 6 # For "Student responses" file - not sure how to do the "data" file...
+  points_single_total: 7 # For "Student responses" file

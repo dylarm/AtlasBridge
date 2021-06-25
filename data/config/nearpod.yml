@@ -15,7 +15,5 @@ columns:
   name_pattern:
   ID:
   username:
-  points:
-    single:
-      assignment: 5
-      total:
+  points_single_assignment: 5
+  points_single_total:

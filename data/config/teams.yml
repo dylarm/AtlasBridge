@@ -15,10 +15,8 @@ columns:
   name_pattern:
   ID:
   username: 3
-  points:
-    single:
-      assignment: 4
-      total: 5
-    multi:
-      assignment: 3 # because the next assignment would be in column 7, then 10, then...
-      total: 3 # I hope these are never different...
+  points_single_assignment: 4
+  points_single_total: 5
+  multi:
+    assignment: 3 # because the next assignment would be in column 7, then 10, then...
+    total: 3 # I hope these are never different...
