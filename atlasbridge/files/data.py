@@ -142,9 +142,11 @@ def __read_file(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
     return db
 
 
-def load_database(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
+def load_database(path: Path, conf: Union[Dict[str, Any], Path]) -> pd.DataFrame:
+    """Read the database file based on the configuration, returning a pandas dataframe"""
     pass
 
 
-def load_grade_file(path: Path, conf: Dict[str, Any]) -> pd.DataFrame:
+def load_grade_file(path: Path, conf: Union[Dict[str, Any], Path]) -> pd.DataFrame:
+    """Read the grade file based on the configuration, returning a pandas dataframe"""
     pass
