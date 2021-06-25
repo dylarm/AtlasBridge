@@ -1,5 +1,6 @@
 import sys, os
 
+import zipfile
 import pandas as pd
 from hypothesis import given, note, example, strategies as st
 from hypothesis.extra import pandas as stpd
@@ -109,8 +110,40 @@ def test_read_csv(df):
     pd.testing.assert_frame_equal(df, in_file)
 
 
-def test_read_zip():
-    assert True
+@given(
+    df=stpd.data_frames(
+        [
+            # stpd.column("Name", dtype=str),
+            stpd.column("Points Earned", dtype="int64"),
+            stpd.column("Points Possible", dtype="int64"),
+            stpd.column("Percentage", dtype="int64"),
+        ]
+    )
+)
+def test_read_zip(df):
+    test_file = "tests/test_file.zip"
+    test_csv = "test_zip.csv"
+    t_conf = {
+        "rows": {"header": 1},
+        "columns": {
+            # "Name": 1,
+            "Points Earned": 1,
+            "Points Possible": 2,
+            "Percentage": 3,
+        },
+    }
+    df.to_csv(test_csv, index=False)
+    with zipfile.ZipFile(test_file, "w") as z_file:
+        z_file.write(test_csv)
+        valid_zip = z_file.testzip()
+        if valid_zip is not None:
+            note("Something bad with creating the zip file")
+            note(f"bad file in zip: {valid_zip}")
+            assert False
+    in_file = data.__read_zip(Path(test_file), t_conf)
+    os.remove(test_csv)
+    os.remove(test_file)
+    pd.testing.assert_frame_equal(df, in_file)
 
 
 # Will need to create mock in-memory files for testing purposes
